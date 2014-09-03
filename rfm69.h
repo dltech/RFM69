@@ -6,8 +6,12 @@
 
 
 
+/* Константы */
 
+#define FXOSC	32000000.
+#define	FSTEP	61.
 
+#define
 
 /* Указатели регистров и описанине битов */
 
@@ -41,24 +45,98 @@
 #define	REBITRATEMSB		0x03
 #define	REBITRATELSB		0x04
 
-#define	BITRATE(br_par
+#define	BITRATE_CALC(FXOSC/br_par)	br_par
 
 #define	REGFDEVMSB			0x05
 #define	REGFDEVLSB			0x06
+
+#define	FDEV_CALC(fdev_par/FSTEP)	fdev_par
+
 #define	REGFRFMSB			0x07
 #define	REGFRFMID			0x08
 #define	REGFRFLSB			0x09
+
+#define FRF_CALC(frf_par/FSTEP)		frf_calc
+
 #define	REGOSC1				0x0a
+
+#define	RCCALSTART		7
+#define	RCCALDONE		6
+
 #define	REGAFCCTRL			0x0b
+
+#define	AFCLOWBETAON	5
+
 #define	REGLISTEN1			0x0d
+
+#define	LISTENIDLE262M	0xc0
+#define	LISTENIDLE4M1	0x80
+#define	LISTENIDLE64U	0x40
+
+#define	LISTENRX262M	0x30
+#define	LISTENRX4M1		0x20
+#define	LISTENRX64U		0x10
+
+#define	LISTENCRITERIA	3
+
+#define	LISTENEND1		0x00
+#define	LISTENEND2		0x02
+#define	LISTENEND3		0x04
+#define	LISTENEND4		0x06
+
 #define	REGLISTEN2			0x0e
 #define	REGLISTEN3			0x0f	
 #define	REGVERSION			0x10
+
 #define	REGPALEVEL			0x11
+
+#define PA0ON			7			// if 1 - power amplifier 0 on
+#define PA1ON			6			// if 1 - power amplifier 1 on
+#define PA2ON			5			// if 1 - power amplifier 2 on
+
+#define	OUT_POWER_CALC(0x1f&(18 - power_par))	power_par
+
 #define	REGPARAMP			0x12
+
+#define	PARAMPTIME3MS	0
+#define	PARAMPTIME2MS	1
+#define	PARAMPTIME1MS	2
+#define	PARAMPTIME500US	3
+#define	PARAMPTIME250US	4
+#define	PARAMPTIME125US	5
+#define	PARAMPTIME100US	6
+#define	PARAMPTIME62US	7
+#define	PARAMPTIME50US	8
+#define	PARAMPTIME40US	9
+#define	PARAMPTIME31US	10
+#define	PARAMPTIME25US	11
+#define	PARAMPTIME20US	12
+#define	PARAMPTIME15US	13
+#define	PARAMPTIME12US	14
+#define	PARAMPTIME10US	15
+
 #define	REGOCP				0x13
-#define	REGLNA				0x18	
+
+#define	OCPON			4
+
+#define	OCP_CURRENT_CALC(0x0f&((ocp_param/5) - 9))	ocp_param
+
+#define	REGLNA				0x18
+
+#define	LNAZIN			7
+
+#define	LNAGAIN_AUTO	0x00
+#define	LNAGAIN_0DB		0x01
+#define	LNAGAIN_6DB		0x02
+#define	LNAGAIN_12DB	0x03
+#define	LNAGAIN_24DB	0x04
+#define	LNAGAIN_36DB	0x05
+#define	LNAGAIN_48DB	0x06
+
 #define	REGRXBW				0x19
+
+
+
 #define	REGAFCBW			0x1a
 #define	REGOOKPEAK			0x1b
 #define	REGOOKAVG			0x1c
