@@ -4,7 +4,9 @@
 /* Основные настройки (можно менять только их, при условии что остальные не тронуты) */
 
 
+/// FSK parametres
 
+#define RISE_FALL_TIME_FSK	3400		//  rise/fall time of ramp up/down in FSK in us (from 10 3400)
 
 /* Константы */
 
@@ -98,22 +100,22 @@
 
 #define	REGPARAMP			0x12
 
-#define	PARAMPTIME3MS	0
-#define	PARAMPTIME2MS	1
-#define	PARAMPTIME1MS	2
-#define	PARAMPTIME500US	3
-#define	PARAMPTIME250US	4
-#define	PARAMPTIME125US	5
-#define	PARAMPTIME100US	6
-#define	PARAMPTIME62US	7
-#define	PARAMPTIME50US	8
-#define	PARAMPTIME40US	9
-#define	PARAMPTIME31US	10
-#define	PARAMPTIME25US	11
-#define	PARAMPTIME20US	12
-#define	PARAMPTIME15US	13
-#define	PARAMPTIME12US	14
-#define	PARAMPTIME10US	15
+#define PARAMP	0x00 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 2000 ? 0x01 ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 1000 ? 0x02 ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 500 ? 0x03 ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 250 ? 0x04 ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 125 ? 0x05 ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 100 ? 0x06 ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 62 ? 0x07 ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 50 ? 0x08 ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 40 ? 0x09 ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 31 ? 0x0a ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 25 ? 0x0b ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 20 ? 0x0c ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 15 ? 0x0d ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 12 ? 0x0e ) 
+#define PARAMP	( RISE_FALL_TIME_FSK <= 10 ? 0x0f )
 
 #define	REGOCP				0x13
 
@@ -209,3 +211,33 @@
 
 
 #endif // RFM69_H_INCLUDED
+
+
+
+
+/* хрень
+
+
+#define	PARAMPTIME3MS	0
+#define	PARAMPTIME2MS	1
+#define	PARAMPTIME1MS	2
+#define	PARAMPTIME500US	3
+#define	PARAMPTIME250US	4
+#define	PARAMPTIME125US	5
+#define	PARAMPTIME100US	6
+#define	PARAMPTIME62US	7
+#define	PARAMPTIME50US	8
+#define	PARAMPTIME40US	9
+#define	PARAMPTIME31US	10
+#define	PARAMPTIME25US	11
+#define	PARAMPTIME20US	12
+#define	PARAMPTIME15US	13
+#define	PARAMPTIME12US	14
+#define	PARAMPTIME10US	15
+
+
+
+*/
+
+
+
