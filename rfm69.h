@@ -1,10 +1,17 @@
 #ifndef RFM69_H_INCLUDED
 #define RFM69_H_INCLUDED
 
+#include "rfm69_table.h"
+
 /* Основные настройки (можно менять только их, при условии что остальные не тронуты) */
 
-#define RX_BW				200			// bandwidth of the channel filter in kHz, must be at least twice bigger then bitrate
-#define RX_BW_AFC			200			// bandwidth of the channel filter in kHz, must be at least twice bigger then bitrate
+
+#define	BITRATE					5600		// bitrate in bit/s
+
+#define RX_BW					200			// bandwidth of the channel filter in kHz, must be at least twice bigger then bitrate
+#define RX_BW_AFC				200			// bandwidth of the channel filter in kHz, must be at least twice bigger then bitrate
+
+#define AUTO_RESTART_RX_DELAY	1			// delay automatic restart Rx in ms
 
 #define	CUT_OFF_FREQ		4			// cut off frecuency of the DC canceller exprecced in % of RXBW
 #define	CUT_OFF_FREQ_AFC	4			// cut off frecuency of the DC canceller exprecced in % of RXBW
@@ -34,8 +41,8 @@
 #define	REGFIFO				0x00
 #define	REGOPMODE			0x01
 
-#define SEQUENCEROFF	7
-#define	LISTENON		6
+#define SEQUENCEROFF	7	// if 0 - sequencer is on
+#define	LISTENON		6	// if 1 - listen mode is on
 #define	LISTENABORT		5
 
 #define	RX_MODE			0x10
@@ -46,42 +53,42 @@
 
 #define	REGDATAMODUL		0x02
 		
-#define	CONT_MODE		0x60
-#define	CONT_SYNCH_MODE	0x40
-#define	PACKET_MODE		0x00
+#define	CONT_MODE		0x60	// continuous mode without bit synchronizer
+#define	CONT_SYNCH_MODE	0x40	// continuous mode with bit synchronizer
+#define	PACKET_MODE		0x00	// packet mode
 
-#define	OOK				0x08
-#define	FSK				0x00
+#define	OOK				0x08	// OOK modulation
+#define	FSK				0x00	// FSK modulation
 
-#define	GAUSS_BT03		0x03
-#define	GAUSS_BT05		0x02
-#define	GAUSS_BT10		0x01
-#define	NO_SHAPING		0x00		
+#define	GAUSS_BT03		0x03	// Gaussian filter, BT = 0.3, when FSK is on
+#define	GAUSS_BT05		0x02	// Gaussian filter, BT = 0.3, when FSK is on
+#define	GAUSS_BT10		0x01	// Gaussian filter, BT = 0.3, when FSK is on
+#define	NO_SHAPING		0x00	// no Tx data shaping	
 
 #define	REBITRATEMSB		0x03
 #define	REBITRATELSB		0x04
 
-#define	BITRATE_CALC(br_par)	(br_par)/FXOSC
+#define	BITRATE_CALC(br_par)	(br_par)/FXOSC		// macro for calculating bitrate 
 
 #define	REGFDEVMSB			0x05
 #define	REGFDEVLSB			0x06
 
-#define	FDEV_CALC(fdev_par)		(fdev_par)/FSTEP
+#define	FDEV_CALC(fdev_par)		(fdev_par)/FSTEP	// macro for calculating deviation frequency
 
 #define	REGFRFMSB			0x07
 #define	REGFRFMID			0x08
 #define	REGFRFLSB			0x09
 
-#define FRF_CALC(frf_par)		(frf_par)/FSTEP
+#define FRF_CALC(frf_par)		(frf_par)/FSTEP		// macro for calculating carrier frequency
 
 #define	REGOSC1				0x0a
 
-#define	RCCALSTART		7
-#define	RCCALDONE		6
+#define	RCCALSTART		7	// set this bit to start calibration process of the RC oscillator, RC calibration must be triggered in standby mode
+#define	RCCALDONE		6	// read 0 if RC calibration in progress, read 0 if calibration is over
 
 #define	REGAFCCTRL			0x0b
 
-#define	AFCLOWBETAON	5
+#define	AFCLOWBETAON	5	// if 1 - improved AFC routine is on, if 0 - standard AFC routine is on
 
 #define	REGLISTEN1			0x0d
 
@@ -102,7 +109,7 @@
 
 #define	REGLISTEN2			0x0e
 #define	REGLISTEN3			0x0f	
-#define	REGVERSION			0x10
+#define	REGVERSION			0x10	// version code of the chip
 
 #define	REGPALEVEL			0x11
 
@@ -114,339 +121,41 @@
 
 #define	REGPARAMP			0x12
 
-#if (RISE_FALL_TIME_FSK >= 2000)
-    #define PARAMP 0x01
-#elif (RISE_FALL_TIME_FSK >= 1000)
-    #define PARAMP 0x02
-#elif (RISE_FALL_TIME_FSK >= 500)
-    #define PARAMP 0x03
-#elif (RISE_FALL_TIME_FSK >= 250)
-    #define PARAMP 0x04
-#elif (RISE_FALL_TIME_FSK >= 125)
-    #define PARAMP 0x05
-#elif (RISE_FALL_TIME_FSK >= 100)
-    #define PARAMP 0x06
-#elif (RISE_FALL_TIME_FSK >= 62)
-    #define PARAMP 0x07
-#elif (RISE_FALL_TIME_FSK >= 50)
-    #define PARAMP 0x08
-#elif (RISE_FALL_TIME_FSK >= 40)
-    #define PARAMP 0x09
-#elif (RISE_FALL_TIME_FSK >= 31)
-    #define PARAMP 0x0a
-#elif (RISE_FALL_TIME_FSK >= 25)
-    #define PARAMP 0x0b
-#elif (RISE_FALL_TIME_FSK >= 20)
-    #define PARAMP 0x0c
-#elif (RISE_FALL_TIME_FSK >= 15)
-    #define PARAMP 0x0d
-#elif (RISE_FALL_TIME_FSK >= 12)
-    #define PARAMP 0x0e
-#elif (RISE_FALL_TIME_FSK >= 10)
-    #define PARAMP 0x0f
-#else
-    #define PARAMP 0x00
-#endif
+// see rfm69_table.h to see table values of parameter
 
 #define	REGOCP				0x13
 
-#define	OCPON			4
+#define	OCPON			4	// if 1 - overload current protection is enabled, if 0 - disabled
 
-#define	OCP_CURRENT_CALC(ocp_param)	0x0f&(((ocp_param)/5) - 9)
+#define	OCP_CURRENT_CALC(ocp_param)	0x0f&(((ocp_param)/5) - 9)	// macro for calculatind OCP trimming current in mA
 
 #define	REGLNA				0x18
 
-#define	LNAZIN			7
+#define	LNAZIN			7	// if 1 - LNA input impedance is 200 Ohms, if 0 - LNA input impedance is 50 Ohms
 
-#define	LNAGAIN_AUTO	0x00
-#define	LNAGAIN_0DB		0x01
-#define	LNAGAIN_6DB		0x02
-#define	LNAGAIN_12DB	0x03
-#define	LNAGAIN_24DB	0x04
-#define	LNAGAIN_36DB	0x05
-#define	LNAGAIN_48DB	0x06
+#define	LNAGAIN_AUTO	0x00	// LNA gain set by the internal AGC loop
+#define	LNAGAIN_0DB		0x01	// highest gain
+#define	LNAGAIN_6DB		0x02	// highest gain - 6dB
+#define	LNAGAIN_12DB	0x03	// highest gain - 12dB
+#define	LNAGAIN_24DB	0x04	// highest gain - 24dB
+#define	LNAGAIN_36DB	0x05	// highest gain - 36dB
+#define	LNAGAIN_48DB	0x06	// highest gain - 48dB
 
 #define	REGRXBW				0x19
 
-#if (CUT_OFF_FREQ >= 16)
-    #define DCCFREQ 0x00
-#elif (CUT_OFF_FREQ >= 8)
-    #define DCCFREQ 0x20
-#elif (CUT_OFF_FREQ >= 4)
-    #define DCCFREQ 0x40
-#elif (CUT_OFF_FREQ >= 2)
-    #define DCCFREQ 0x60
-#elif (CUT_OFF_FREQ >= 1)
-    #define DCCFREQ 0x80
-#elif (CUT_OFF_FREQ >= 0.5)
-    #define DCCFREQ 0xa0
-#elif (CUT_OFF_FREQ >= 0.25)
-    #define DCCFREQ 0xc0
-#elif (CUT_OFF_FREQ >= 0.125)
-    #define DCCFREQ 0xe0
-#endif
-
-#if ((RX_BW >= 500.0) && (FSK_ON > 0))
-    #define RXBW 0x00
-#elif ((RX_BW >= 400.0) && (FSK_ON > 0))
-    #define RXBW 0x08
-#elif ((RX_BW >= 333.3) && (FSK_ON > 0))
-    #define RXBW 0x10
-#elif ((RX_BW >= 250.0) && (FSK_ON > 0))
-    #define RXBW 0x01
-#elif ((RX_BW >= 200.0) && (FSK_ON > 0))
-    #define RXBW 0x09
-#elif ((RX_BW >= 166.7) && (FSK_ON > 0))
-    #define RXBW 0x11
-#elif ((RX_BW >= 125.0) && (FSK_ON > 0))
-    #define RXBW 0x02
-#elif ((RX_BW >= 100.0) && (FSK_ON > 0))
-    #define RXBW 0x0a
-#elif ((RX_BW >= 83.3) && (FSK_ON > 0))
-    #define RXBW 0x12
-#elif ((RX_BW >= 62.5) && (FSK_ON > 0))
-    #define RXBW 0x03
-#elif ((RX_BW >= 50.0) && (FSK_ON > 0))
-    #define RXBW 0x0b
-#elif ((RX_BW >= 41.7) && (FSK_ON > 0))
-    #define RXBW 0x13
-#elif ((RX_BW >= 31.3) && (FSK_ON > 0))
-    #define RXBW 0x04
-#elif ((RX_BW >= 25.0) && (FSK_ON > 0))
-    #define RXBW 0x0c
-#elif ((RX_BW >= 20.8) && (FSK_ON > 0))
-    #define RXBW 0x14
-#elif ((RX_BW >= 15.6) && (FSK_ON > 0))
-    #define RXBW 0x05
-#elif ((RX_BW >= 12.5) && (FSK_ON > 0))
-    #define RXBW 0x0d
-#elif ((RX_BW >= 10.4) && (FSK_ON > 0))
-    #define RXBW 0x15
-#elif ((RX_BW >= 7.8) && (FSK_ON > 0))
-    #define RXBW 0x06
-#elif ((RX_BW >= 6.3) && (FSK_ON > 0))
-    #define RXBW 0x0e
-#elif ((RX_BW >= 5.2) && (FSK_ON > 0))
-    #define RXBW 0x16
-#elif ((RX_BW >= 3.9) && (FSK_ON > 0))
-    #define RXBW 0x07
-#elif ((RX_BW >= 3.1) && (FSK_ON > 0))
-    #define RXBW 0x0f
-#elif ((RX_BW >= 2.6) && (FSK_ON > 0))
-    #define RXBW 0x17
-#endif
-
-#if ((RX_BW >= 250.0) && (OOK_ON > 0))
-    #define RXBW 0x00
-#elif ((RX_BW >= 200.0) && (OOK_ON > 0))
-    #define RXBW 0x08
-#elif ((RX_BW >= 166.7) && (OOK_ON > 0))
-    #define RXBW 0x10
-#elif ((RX_BW >= 125.0) && (OOK_ON > 0))
-    #define RXBW 0x01
-#elif ((RX_BW >= 100.0) && (OOK_ON > 0))
-    #define RXBW 0x09
-#elif ((RX_BW >= 83.3) && (OOK_ON > 0))
-    #define RXBW 0x11
-#elif ((RX_BW >= 62.5) && (OOK_ON > 0))
-    #define RXBW 0x02
-#elif ((RX_BW >= 50.0) && (OOK_ON > 0))
-    #define RXBW 0x0a
-#elif ((RX_BW >= 41.7) && (OOK_ON > 0))
-    #define RXBW 0x12
-#elif ((RX_BW >= 31.3) && (OOK_ON > 0))
-    #define RXBW 0x03
-#elif ((RX_BW >= 25.0) && (OOK_ON > 0))
-    #define RXBW 0x0b
-#elif ((RX_BW >= 20.8) && (OOK_ON > 0))
-    #define RXBW 0x13
-#elif ((RX_BW >= 15.6) && (OOK_ON > 0))
-    #define RXBW 0x04
-#elif ((RX_BW >= 12.5) && (OOK_ON > 0))
-    #define RXBW 0x0c
-#elif ((RX_BW >= 10.4) && (OOK_ON > 0))
-    #define RXBW 0x14
-#elif ((RX_BW >= 7.8) && (OOK_ON > 0))
-    #define RXBW 0x05
-#elif ((RX_BW >= 6.3) && (OOK_ON > 0))
-    #define RXBW 0x0d
-#elif ((RX_BW >= 5.2) && (OOK_ON > 0))
-    #define RXBW 0x15
-#elif ((RX_BW >= 3.9) && (OOK_ON > 0))
-    #define RXBW 0x06
-#elif ((RX_BW >= 3.1) && (OOK_ON > 0))
-    #define RXBW 0x0e
-#elif ((RX_BW >= 2.6) && (OOK_ON > 0))
-    #define RXBW 0x16
-#elif ((RX_BW >= 2.0) && (OOK_ON > 0))
-    #define RXBW 0x07
-#elif ((RX_BW >= 1.6) && (OOK_ON > 0))
-    #define RXBW 0x0f
-#elif ((RX_BW >= 1.3) && (OOK_ON > 0))
-    #define RXBW 0x17
-#endif
+// see rfm69_table.h to see table values of parameter
 
 #define	REGAFCBW			0x1a
 
-#if (CUT_OFF_FREQ_AFC >= 16)
-    #define DCCFREQAFC 0x00
-#elif (CUT_OFF_FREQ_AFC >= 8)
-    #define DCCFREQAFC 0x20
-#elif (CUT_OFF_FREQ_AFC >= 4)
-    #define DCCFREQAFC 0x40
-#elif (CUT_OFF_FREQ_AFC >= 2)
-    #define DCCFREQAFC 0x60
-#elif (CUT_OFF_FREQ_AFC >= 1)
-    #define DCCFREQAFC 0x80
-#elif (CUT_OFF_FREQ_AFC >= 0.5)
-    #define DCCFREQAFC 0xa0
-#elif (CUT_OFF_FREQ_AFC >= 0.25)
-    #define DCCFREQAFC 0xc0
-#elif (CUT_OFF_FREQ_AFC >= 0.125)
-    #define DCCFREQAFC 0xe0
-#endif
-
-#if ((RX_BW_AFC >= 500.0) && (FSK_ON > 0))
-    #define RXBWAFC 0x00
-#elif ((RX_BW_AFC >= 400.0) && (FSK_ON > 0))
-    #define RXBWAFC 0x08
-#elif ((RX_BW_AFC >= 333.3) && (FSK_ON > 0))
-    #define RXBWAFC 0x10
-#elif ((RX_BW_AFC >= 250.0) && (FSK_ON > 0))
-    #define RXBWAFC 0x01
-#elif ((RX_BW_AFC >= 200.0) && (FSK_ON > 0))
-    #define RXBWAFC 0x09
-#elif ((RX_BW >= 166.7) && (FSK_ON > 0))
-    #define RXBWAFC 0x11
-#elif ((RX_BW >= 125.0) && (FSK_ON > 0))
-    #define RXBWAFC 0x02
-#elif ((RX_BW >= 100.0) && (FSK_ON > 0))
-    #define RXBWAFC 0x0a
-#elif ((RX_BW >= 83.3) && (FSK_ON > 0))
-    #define RXBWAFC 0x12
-#elif ((RX_BW >= 62.5) && (FSK_ON > 0))
-    #define RXBWAFC 0x03
-#elif ((RX_BW >= 50.0) && (FSK_ON > 0))
-    #define RXBWAFC 0x0b
-#elif ((RX_BW >= 41.7) && (FSK_ON > 0))
-    #define RXBWAFC 0x13
-#elif ((RX_BW >= 31.3) && (FSK_ON > 0))
-    #define RXBWAFC 0x04
-#elif ((RX_BW >= 25.0) && (FSK_ON > 0))
-    #define RXBWAFC 0x0c
-#elif ((RX_BW >= 20.8) && (FSK_ON > 0))
-    #define RXBWAFC 0x14
-#elif ((RX_BW >= 15.6) && (FSK_ON > 0))
-    #define RXBWAFC 0x05
-#elif ((RX_BW >= 12.5) && (FSK_ON > 0))
-    #define RXBWAFC 0x0d
-#elif ((RX_BW >= 10.4) && (FSK_ON > 0))
-    #define RXBWAFC 0x15
-#elif ((RX_BW >= 7.8) && (FSK_ON > 0))
-    #define RXBWAFC 0x06
-#elif ((RX_BW >= 6.3) && (FSK_ON > 0))
-    #define RXBWAFC 0x0e
-#elif ((RX_BW >= 5.2) && (FSK_ON > 0))
-    #define RXBWAFC 0x16
-#elif ((RX_BW >= 3.9) && (FSK_ON > 0))
-    #define RXBWAFC 0x07
-#elif ((RX_BW >= 3.1) && (FSK_ON > 0))
-    #define RXBWAFC 0x0f
-#elif ((RX_BW >= 2.6) && (FSK_ON > 0))
-    #define RXBWAFC 0x17
-#endif
-
-#if ((RX_BW >= 250.0) && (OOK_ON > 0))
-    #define RXBWAFC 0x00
-#elif ((RX_BW >= 200.0) && (OOK_ON > 0))
-    #define RXBWAFC 0x08
-#elif ((RX_BW >= 166.7) && (OOK_ON > 0))
-    #define RXBWAFC 0x10
-#elif ((RX_BW >= 125.0) && (OOK_ON > 0))
-    #define RXBWAFC 0x01
-#elif ((RX_BW >= 100.0) && (OOK_ON > 0))
-    #define RXBWAFC 0x09
-#elif ((RX_BW >= 83.3) && (OOK_ON > 0))
-    #define RXBWAFC 0x11
-#elif ((RX_BW >= 62.5) && (OOK_ON > 0))
-    #define RXBWAFC 0x02
-#elif ((RX_BW >= 50.0) && (OOK_ON > 0))
-    #define RXBWAFC 0x0a
-#elif ((RX_BW >= 41.7) && (OOK_ON > 0))
-    #define RXBWAFC 0x12
-#elif ((RX_BW >= 31.3) && (OOK_ON > 0))
-    #define RXBWAFC 0x03
-#elif ((RX_BW >= 25.0) && (OOK_ON > 0))
-    #define RXBWAFC 0x0b
-#elif ((RX_BW >= 20.8) && (OOK_ON > 0))
-    #define RXBWAFC 0x13
-#elif ((RX_BW >= 15.6) && (OOK_ON > 0))
-    #define RXBWAFC 0x04
-#elif ((RX_BW >= 12.5) && (OOK_ON > 0))
-    #define RXBWAFC 0x0c
-#elif ((RX_BW >= 10.4) && (OOK_ON > 0))
-    #define RXBWAFC 0x14
-#elif ((RX_BW >= 7.8) && (OOK_ON > 0))
-    #define RXBWAFC 0x05
-#elif ((RX_BW >= 6.3) && (OOK_ON > 0))
-    #define RXBWAFC 0x0d
-#elif ((RX_BW >= 5.2) && (OOK_ON > 0))
-    #define RXBWAFC 0x15
-#elif ((RX_BW >= 3.9) && (OOK_ON > 0))
-    #define RXBWAFC 0x06
-#elif ((RX_BW >= 3.1) && (OOK_ON > 0))
-    #define RXBWAFC 0x0e
-#elif ((RX_BW >= 2.6) && (OOK_ON > 0))
-    #define RXBWAFC 0x16
-#elif ((RX_BW >= 2.0) && (OOK_ON > 0))
-    #define RXBWAFC 0x07
-#elif ((RX_BW >= 1.6) && (OOK_ON > 0))
-    #define RXBWAFC 0x0f
-#elif ((RX_BW >= 1.3) && (OOK_ON > 0))
-    #define RXBW 0x17
-#endif
+// see rfm69_table.h to see table values of parameter
 
 #define	REGOOKPEAK			0x1b
 
-#define	OOKTHRESFIXED	0x00
-#define	OOKTHRESPEAK	0x40
-#define	OOKTHRESAVERAGE	0x80
+#define	OOKTHRESFIXED	0x00	// fixed threshold in the OOK data slicer
+#define	OOKTHRESPEAK	0x40	// peak threshold in the OOK data slicer
+#define	OOKTHRESAVERAGE	0x80	// average threshold in the OOK data slicer
 
-#if (OOK_PEAK_THRESH_STEP >= 6.0)
-	#define	OOKPEAKTHRESHSTEP	0x38
-#elif (OOK_PEAK_THRESH_STEP >= 5.0)
-	#define	OOKPEAKTHRESHSTEP	0x30
-#elif (OOK_PEAK_THRESH_STEP >= 4.0)
-	#define	OOKPEAKTHRESHSTEP	0x28
-#elif (OOK_PEAK_THRESH_STEP >= 3.0)
-	#define	OOKPEAKTHRESHSTEP	0x20
-#elif (OOK_PEAK_THRESH_STEP >= 2.0)
-	#define	OOKPEAKTHRESHSTEP	0x18
-#elif (OOK_PEAK_THRESH_STEP >= 1.5)
-	#define	OOKPEAKTHRESHSTEP	0x10
-#elif (OOK_PEAK_THRESH_STEP >= 1.0)
-	#define	OOKPEAKTHRESHSTEP	0x08
-#elif (OOK_PEAK_THRESH_STEP >= 0.5)
-	#define	OOKPEAKTHRESHSTEP	0x00
-#endif
-
-#if (OOK_PEAK_THRESH_DEC >= 16)
-	#define	OOKPEAKTHRESHDEC	0x07
-#elif (OOK_PEAK_THRESH_DEC >= 8)
-	#define OOKPEAKTHRESHDEC	0x06
-#elif (OOK_PEAK_THRESH_DEC >= 4)
-	#define OOKPEAKTHRESHDEC	0x05
-#elif (OOK_PEAK_THRESH_DEC >= 2)
-	#define OOKPEAKTHRESHDEC	0x04
-#elif (OOK_PEAK_THRESH_DEC >= 1)
-	#define OOKPEAKTHRESHDEC	0x00
-#elif (OOK_PEAK_THRESH_DEC >= 0.5)
-	#define OOKPEAKTHRESHDEC	0x01
-#elif (OOK_PEAK_THRESH_DEC >= 0.25)
-	#define OOKPEAKTHRESHDEC	0x02
-#elif (OOK_PEAK_THRESH_DEC >= 0.125)
-	#define OOKPEAKTHRESHDEC	0x03
-#endif
+// see rfm69_table.h to see table values of parameter
 
 #define	REGOOKAVG			0x1c // лень заполнять
 #define	REGOOKFIX			0x1d
@@ -464,12 +173,12 @@
 #define	REGAFCMSB			0x1f
 #define	REGAFCLSB			0x20
 
-#define	AFC_VALUE(afc_par)	(afc_par)*FSTEP
+#define	AFC_VALUE(afc_par)	(afc_par)*FSTEP		// macro to calculate AFC value in Hz from register value
 
 #define	REGFEIMSB			0x21
 #define	REGFEILSB			0x22
 
-#define	FEI_VALUE(fei_par)	(fei_par)*FSTEP
+#define	FEI_VALUE(fei_par)	(fei_par)*FSTEP		// macro to frequency offset value in Hz from register value
 
 #define	REGRSSICONFIG		0x23
 
@@ -489,33 +198,33 @@
 #define CLKOUT4M	0x03
 #define CLKOUT2M	0x04
 #define CLKOUT1M	0x05
-#define CLKOUT_RC	0x06
-#define CLKOUT_OFF	0x07
+#define CLKOUT_RC	0x06	// output frequency of the RC oscillator (automatically enabled)
+#define CLKOUT_OFF	0x07	// output frequency is off
 
 #define	REGIRQFLAGS1		0x27
 
 #define	MODEREADY		7
-#define	RXREADY			6
-#define	TXREADY			5
-#define	PLLLOCK			4
-#define	RSSI_I			3
-#define	TIMEOUT			2
-#define	AUTOMODE		1
-#define	SYNCADDRMATCH	0
+#define	RXREADY			6	// Set in Rx mode, after RSSI, AGC and AFC. Cleared when leaving Rx.
+#define	TXREADY			5	// Set in Tx mode, after PA ramp-up.
+#define	PLLLOCK			4	// Set (in FS, Rx or Tx) when the PLL is locked. Cleared when it is not.
+#define	RSSI_I			3	// Set in Rx when the RssiValue exceeds RssiThreshold. Cleared when leaving Rx.
+#define	TIMEOUT			2	// Set when a timeout occurs. Cleared when leaving Rx or FIFO is emptied.
+#define	AUTOMODE		1	// Set when entering Intermediate mode. Cleared when exiting Intermediate mode.
+#define	SYNCADDRMATCH	0	// Set when Sync and Address (if enabled) are detected. Cleared when leaving Rx or FIFO is emptied.
 
 #define	REGIRQFLAGS2		0x28
 
-#define	FIFOISFULL		7
-#define	FIFONOTEMPTY	6
-#define	FIFOLEVEL		5
-#define	FIFOOVERRUN		4
-#define	PACKETSENT		3
-#define	PAYLOADREADY	2
-#define	CRCOK			1
+#define	FIFOISFULL		7	// Set when FIFO is full (i.e. contains 66 bytes), else cleared.
+#define	FIFONOTEMPTY	6	// Set when FIFO contains at least one byte, else cleared.
+#define	FIFOLEVEL		5	// Set when the number of bytes in the FIFO strictly exceeds FifoThreshold, else cleared.
+#define	FIFOOVERRUN		4	// Set when FIFO overrun occurs. (except in Sleep mode). Flag(s) and FIFO are cleared when this bit is set.
+#define	PACKETSENT		3	// Set in Tx when the complete packet has been sent. Cleared when exiting Tx.
+#define	PAYLOADREADY	2	// Set in Rx when the payload is ready (i.e. last byte received and CRC, if enabled and CrcAutoClearOff is cleared, is Ok). Cleared when FIFO is empty.
+#define	CRCOK			1	// Set in Rx when the CRC of the payload is Ok. Cleared when FIFO is empty.
 
 #define	REGRSSITHRESH		0x29
 
-#define RSSI_THRES_CALC(rssi_parr)	(rssi_parr)*2
+#define RSSI_THRES_CALC(rssi_parr)	(rssi_parr)*2	// macro to calculate trigger level of RSSI interrupt
 
 #define	REGRXTIMEOUT1		0x2a
 #define	REGRXTIMEOUT2		0x2b
@@ -525,8 +234,9 @@
 #define	REGSYNCCONSIG		0x2e
 
 #define	SYNCON			7	// 1 - sync word on , 0 - sync word off
-#define	
+#define	FIFOFILLCOND	6	// if 0 - FIFO is filling if SyncAddress interrupt occurs, if 1 FIFO is filling as long as FifoFillCondition is set
 
+#define	SYNCSIZE_CALC(syncsize_par)		(syncsize_par-1)
 
 #define	REGSYNCVALUE1		0x2f
 #define	REGSYNCVALUE2		0x30
@@ -537,12 +247,38 @@
 #define	REGSYNCVALUE7		0x35
 #define	REGSYNCVALUE8		0x36
 #define REGPACKETCONFIG1	0x37
+
+#define	PACKETFORMAT	7		// if 0 - packet lenght is fixed, if 1 - packet lenght is variable
+
+#define	ENCODING_OFF	0x00	// off any dc free data encoding/decoding
+#define	MANCHESTER_ENC	0x20	// manchester encoding enabled
+#define	DATA_WHITENING	0x40	// data whitening enabled
+
+#define	CRCON			4		// if 1 - crc is on, else off
+#define	CRCAUTOCLEAROFF	3		// When CRC check fails, if 0 - FIFO is cleared and packet is received, if 1 - FIFO is not cleared and PayloadReady interrupt issued
+
+#define	ADDRESS_OFF			0x00	// off address filtering
+#define	NODE_ADDRESS_ONLY	0x02	// node address is on, broadcast address is off
+#define	NODE_BROADCAST_ADDR	0X04	// node address and broadcast addresses are on
+
 #define	REGPAYLOADLENGHT	0x38
+
 #define	REGNODEADRS			0x39
 #define	REGBROADCASTADRS	0x3a
 #define	REGAUTOMODES		0x3b
+
 #define	REGFIFOTHRES		0x3c
+
+#define	TXSTARTCOND		7		// if 1 - tx start when FIFO is not empty, if 0 - tx starts when number of bytes exceeds threshold 
+
 #define	REGPACKETCONFIG2	0x3d
+
+// see rfm69_table.h to see table of values of the parameter
+
+#define	RESTARTRX		2		// set this bit to restart the receiver in WAIT mode
+#define	AUTORXRESTARTON	1		// If this bit is set, receiver automstically restarted after RestartRx delay
+#define	AESON			0		// set this bit to enable AES encryption/decryption
+
 #define	REGAESKEY1			0x3e
 #define	REGAESKEY2			0x3f
 #define	REGAESKEY3			0x40
@@ -562,10 +298,11 @@
 
 #define	REGTEMP1			0x4e
 
-#define	TEMPMEASSTART	3	// write 1 to start temperature measurement
+#define	TEMPMEASSTART	3	// set this bit to start temperature measurement
 #define	TEMPMEASRUNNING	2	// 1 - if temperature measurement is on-going, 0 - if complete
 
 #define	REGTEMP2			0x4f
+
 /// test registers
 #define	RETESTLNA			0x58
 
