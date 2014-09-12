@@ -333,6 +333,15 @@
 
 /* Конфигурация регистров */
 
+/// packet handler configuration
+
+#define REGDATAMODUL_DEF	(PACKET_MODE | MODUL_TYPE | GAUSS_BT10)
+#define 
+
+/// AFC, power amplifier and low noise amplifier configuration
+
+#define	REGAFCCTRL_DEF		( 0<<(AFCLOWBETAON) )
+#define 
 
 
 
