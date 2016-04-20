@@ -194,7 +194,7 @@ uint8_t rfm69_read(uint8_t address)
 	@param address - initial address
 	@param data - register array pointer
 	@param ndata - number of registers
-	\warning {because of rfm69 hardware bugs not recommended to use}	  
+	\warning because of rfm69 hardware bugs not recommended to use  
 */
 void rfm69_write_burst(uint8_t address, uint8_t *data, uint8_t ndata)
 {
@@ -228,7 +228,7 @@ void rfm69_write_burst(uint8_t address, uint8_t *data, uint8_t ndata)
 	@param address - initial address
 	@param data - register array pointer
 	@param ndata - number of registers
-	\warning {because of rfm69 hardware bugs not recommended to use} 
+	\warning because of rfm69 hardware bugs not recommended to use
 */
 void rfm69_read_burst(uint8_t address, uint8_t *data, uint8_t ndata)
 {
