@@ -187,7 +187,7 @@
 /// @}
 /*****************************************************************************/
 
-/// this enum describes state of radiomodule, which stored in rfm69_condition variable
+/// This enum describes state of radiomodule, which stored in rfm69_condition variable.
 enum {
 	RFM69_SPI_FAILED = 1,	///< failed to read register through SPI
 	RFM69_SLEEP,			///< radiomodule is in sleep mode
